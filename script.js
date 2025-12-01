@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToHomeFromGame = document.getElementById('back-to-home-from-game');
     const backToHomeFromResults = document.getElementById('back-to-home-from-results');
 
-    // ======== جديد: اختيار أزرار التنقل ========
+    // ======== اختيار أزرار التنقل ========
     const prevQuestionBtn = document.getElementById('prev-question-btn');
     const nextQuestionBtn = document.getElementById('next-question-btn');
 
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let currentQuestionIndex = 0;
     let questions = [];
-    let userAnswers = []; // ======== جديد: لتتبع إجابات المستخدم ========
+    let userAnswers = []; // لتتبع إجابات المستخدم
 
     // --- دوال المساعدة ---
     function showScreen(screen) {
@@ -154,10 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
             answersContainer.appendChild(button);
         });
 
-        // ======== جديد: تحديث حالة أزرار التنقل ========
+        // ======== تحديث حالة أزرار التنقل ========
         updateNavButtons();
 
-        // ======== جديد: استعادة حالة الإجابة إذا كان المستخدم قد أجاب من قبل ========
+        // ======== استعادة حالة الإجابة إذا كان المستخدم قد أجاب من قبل ========
         if (userAnswers[currentQuestionIndex]) {
             const previousAnswer = userAnswers[currentQuestionIndex];
             const allButtons = document.querySelectorAll('.answer-option');
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     restartBtn.addEventListener('click', resetGame);
 
     backToHomeFromLearn.addEventListener('click', (event) => {
-        event.preventDefault();
+        event.preventDefault(); // منع الرابط من التنقل
         resetGame();
     });
 

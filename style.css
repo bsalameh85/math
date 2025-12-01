@@ -25,6 +25,7 @@ body {
     justify-content: center;
     align-items: center;
     direction: rtl;
+    padding-bottom: 50px;
 }
 
 .app-container {
@@ -55,10 +56,28 @@ body {
     display: none !important;
 }
 
-.mascot {
-    font-size: 4rem;
+/* ======== جديد: تنسيق الشعار في وسط الشاشة ======== */
+.logo-display {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
     margin-bottom: 1rem;
     animation: float 3s ease-in-out infinite;
+}
+
+/* ======== جديد: تنسيق عنوان المدرسة ======== */
+.school-name {
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* ======== جديد: تنسيق اسم الطالبة ======== */
+.student-credit {
+    color: #777;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 h1 {
@@ -330,24 +349,30 @@ button:disabled {
 }
 
 /* --- تصميم شاشة النتائج --- */
-/* ======== جديد: تنسيق صورة اللاعب في شاشة النتائج ======== */
 #results-player-pic {
-    display: none; /* إخفاؤها افتراضياً */
+    display: none;
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 5px solid var(--success-color); /* إطار احتفالي */
+    border: 5px solid var(--success-color);
     margin-bottom: 1rem;
-    box-shadow: 0 0 20px rgba(0, 200, 81, 0.4); /* ظل خفيف */
+    box-shadow: 0 0 20px rgba(0, 200, 81, 0.4);
     animation: pop-in 0.6s ease-out;
 }
 
-/* ======== جديد: رسوم متحركة لظهور الصورة ======== */
-@keyframes pop-in {
-    0% { transform: scale(0); opacity: 0; }
-    80% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
+/* --- تصميم التذييل --- */
+.main-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.9rem;
+    z-index: 1000;
 }
 
 /* --- رسوم متحركة --- */
@@ -384,10 +409,19 @@ button:disabled {
     20%, 40%, 60%, 80% { transform: translateX(8px); }
 }
 
+@keyframes pop-in {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 /* --- تصميم متجاوب --- */
 @media (max-width: 480px) {
     .card {
         padding: 1.5rem;
+    }
+    .school-name {
+        font-size: 1.3rem;
     }
     h1 {
         font-size: 1.8rem;
@@ -400,5 +434,9 @@ button:disabled {
     }
     #action-buttons {
         flex-direction: column;
+    }
+    .logo-display {
+        width: 150px;
+        height: 150px;
     }
 }

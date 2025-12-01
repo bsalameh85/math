@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultTitle = document.getElementById('result-title');
     const finalMessageP = document.getElementById('final-message');
     const restartBtn = document.getElementById('restart-btn');
-    const resultsPlayerPic = document.getElementById('results-player-pic'); // ======== جديد ========
+    const resultsPlayerPic = document.getElementById('results-player-pic');
 
     // --- متغيرات حالة اللعبة ---
     let childName = '';
@@ -176,9 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500);
     }
 
-    // ======== تم التعديل: إضافة منطق عرض الصورة ========
     function showResults() {
-        // عرض أو إخفاء الصورة بناءً على وجودها
         if (childPictureUrl) {
             resultsPlayerPic.src = childPictureUrl;
             resultsPlayerPic.style.display = 'block';
@@ -220,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imagePreview.src = 'https://via.placeholder.com/100';
         childPictureUrl = '';
         tableDisplay.innerHTML = '';
-        resultsPlayerPic.style.display = 'none'; // ======== جديد: إخفاء الصورة عند إعادة التعيين ========
+        resultsPlayerPic.style.display = 'none';
         
         validateForm();
         

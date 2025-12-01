@@ -33,6 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartBtn = document.getElementById('restart-btn');
     const resultsPlayerPic = document.getElementById('results-player-pic');
 
+    const backToHomeFromLearn = document.getElementById('back-to-home-from-learn');
+    const backToHomeFromGame = document.getElementById('back-to-home-from-game');
+    const backToHomeFromResults = document.getElementById('back-to-home-from-results');
+
+    // ======== جديد: اختيار أزرار التنقل ========
+    const prevQuestionBtn = document.getElementById('prev-question-btn');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+
     // --- متغيرات حالة اللعبة ---
     let childName = '';
     let childPictureUrl = '';
@@ -41,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let currentQuestionIndex = 0;
     let questions = [];
+    let userAnswers = []; // ======== جديد: لتتبع إجابات المستخدم ========
 
     // --- دوال المساعدة ---
     function showScreen(screen) {
@@ -123,38 +132,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ======== تم التعديل الكامل: دالة عرض السؤال ========
     function displayQuestion() {
-        if (currentQuestionIndex < questions.length) {
-            const question = questions[currentQuestionIndex];
-            questionText.textContent = `${question.num1} × ${question.num2} = ?`;
-            questionCountSpan.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
-            
-            const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
-            progressBar.style.width = `${progress}%`;
+        if (currentQuestionIndex < 0 || currentQuestionIndex >= questions.length) {
+            return; // لا تفعل شيئاً إذا كان الفهرس خارج النطاق
+        }
 
-            answersContainer.innerHTML = '';
-            question.options.forEach(option => {
-                const button = document.createElement('button');
-                button.classList.add('answer-option');
-                button.textContent = option;
-                button.addEventListener('click', () => handleAnswerClick(option, button));
-                answersContainer.appendChild(button);
+        const question = questions[currentQuestionIndex];
+        questionText.textContent = `${question.num1} × ${question.num2} = ?`;
+        questionCountSpan.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+        
+        const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        answersContainer.innerHTML = '';
+        question.options.forEach(option => {
+            const button = document.createElement('button');
+            button.classList.add('answer-option');
+            button.textContent = option;
+            button.addEventListener('click', () => handleAnswerClick(option, button));
+            answersContainer.appendChild(button);
+        });
+
+        // ======== جديد: تحديث حالة أزرار التنقل ========
+        updateNavButtons();
+
+        // ======== جديد: استعادة حالة الإجابة إذا كان المستخدم قد أجاب من قبل ========
+        if (userAnswers[currentQuestionIndex]) {
+            const previousAnswer = userAnswers[currentQuestionIndex];
+            const allButtons = document.querySelectorAll('.answer-option');
+            allButtons.forEach(btn => {
+                btn.classList.add('disabled');
+                btn.style.pointerEvents = 'none';
+                if (parseInt(btn.textContent) === previousAnswer.selected) {
+                    btn.classList.add(previousAnswer.isCorrect ? 'correct' : 'incorrect');
+                }
+                if (parseInt(btn.textContent) === question.correctAnswer && !previousAnswer.isCorrect) {
+                    btn.classList.add('correct');
+                }
             });
-
+        }
+    }
+    
+    // ======== جديد: دالة لتحديث حالة أزرار التنقل ========
+    function updateNavButtons() {
+        // تعطيل زر "السابق" في السؤال الأول
+        if (currentQuestionIndex === 0) {
+            prevQuestionBtn.disabled = true;
+            prevQuestionBtn.classList.add('nav-btn-disabled');
         } else {
-            showResults();
+            prevQuestionBtn.disabled = false;
+            prevQuestionBtn.classList.remove('nav-btn-disabled');
+        }
+
+        // تعطيل زر "التالي" في السؤال الأخير
+        if (currentQuestionIndex === questions.length - 1) {
+            nextQuestionBtn.disabled = true;
+            nextQuestionBtn.classList.add('nav-btn-disabled');
+        } else {
+            nextQuestionBtn.disabled = false;
+            nextQuestionBtn.classList.remove('nav-btn-disabled');
         }
     }
 
+    // ======== تم التعديل: دالة معالجة النقر على الإجابة ========
     function handleAnswerClick(selectedAnswer, buttonElement) {
-        const allButtons = document.querySelectorAll('.answer-option');
-        allButtons.forEach(btn => {
-            btn.classList.add('disabled');
-            btn.style.pointerEvents = 'none';
-        });
+        // إذا كان قد تم الإجابة على هذا السؤال من قبل، لا تفعل شيئاً
+        if (userAnswers[currentQuestionIndex]) {
+            return;
+        }
 
         const currentQuestion = questions[currentQuestionIndex];
         const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+
+        // حفظ إجابة المستخدم
+        userAnswers[currentQuestionIndex] = { selected: selectedAnswer, isCorrect: isCorrect };
 
         if (isCorrect) {
             score++;
@@ -162,18 +214,47 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonElement.classList.add('correct');
         } else {
             buttonElement.classList.add('incorrect');
+            // إظهار الإجابة الصحيحة
+            const allButtons = document.querySelectorAll('.answer-option');
             allButtons.forEach(btn => {
                 if (parseInt(btn.textContent) === currentQuestion.correctAnswer) {
                     btn.classList.add('correct');
                 }
             });
         }
-        
-        currentQuestionIndex++;
 
-        setTimeout(() => {
+        // تعطيل جميع الأزرار
+        const allButtons = document.querySelectorAll('.answer-option');
+        allButtons.forEach(btn => {
+            btn.classList.add('disabled');
+            btn.style.pointerEvents = 'none';
+        });
+    }
+
+    // ======== جديد: دالة الانتقال للسؤال السابق ========
+    function goToPreviousQuestion() {
+        if (currentQuestionIndex > 0) {
+            // إذا كانت الإجابة الحالية صحيحة، قلل النقاط
+            if (userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].isCorrect) {
+                score--;
+                scoreSpan.textContent = score;
+            }
+            currentQuestionIndex--;
             displayQuestion();
-        }, 1500);
+        }
+    }
+
+    // ======== جديد: دالة الانتقال للسؤال التالي ========
+    function goToNextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            displayQuestion();
+        } else {
+            // إذا كان هذا هو آخر سؤال وتمت الإجابة عليه، اعرض النتائج
+            if(userAnswers.every(answer => answer !== undefined)) {
+                showResults();
+            }
+        }
     }
 
     function showResults() {
@@ -219,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         childPictureUrl = '';
         tableDisplay.innerHTML = '';
         resultsPlayerPic.style.display = 'none';
+        userAnswers = []; // إعادة تعيين إجابات المستخدم
         
         validateForm();
         
@@ -264,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         generateQuestions(selectedTable, totalQuestions);
         score = 0;
         currentQuestionIndex = 0;
+        userAnswers = []; // إعادة تعيين الإجابات
         scoreSpan.textContent = score;
         showScreen(gameScreen);
         displayQuestion();
@@ -274,11 +357,38 @@ document.addEventListener('DOMContentLoaded', () => {
         generateQuestions(selectedTable, totalQuestions);
         score = 0;
         currentQuestionIndex = 0;
+        userAnswers = []; // إعادة تعيين الإجابات
         scoreSpan.textContent = score;
         showScreen(gameScreen);
         displayQuestion();
     });
 
     restartBtn.addEventListener('click', resetGame);
+
+    backToHomeFromLearn.addEventListener('click', (event) => {
+        event.preventDefault();
+        resetGame();
+    });
+
+    backToHomeFromGame.addEventListener('click', (event) => {
+        event.preventDefault();
+        resetGame();
+    });
+
+    backToHomeFromResults.addEventListener('click', (event) => {
+        event.preventDefault();
+        resetGame();
+    });
+
+    // ======== جديد: معالجات أحداث أزرار التنقل ========
+    prevQuestionBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        goToPreviousQuestion();
+    });
+
+    nextQuestionBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        goToNextQuestion();
+    });
 
 });

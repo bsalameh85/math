@@ -35,8 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const backToHomeFromLearn = document.getElementById('back-to-home-from-learn');
     const backToHomeFromGame = document.getElementById('back-to-home-from-game');
-    // ======== تم الحذف: متغير العنصر لزر النتائج ========
-    // const backToHomeFromResults = document.getElementById('back-to-home-from-results');
+    const backToHomeFromResults = document.getElementById('back-to-home-from-results');
 
     // ======== اختيار أزرار التنقل ========
     const prevQuestionBtn = document.getElementById('prev-question-btn');
@@ -376,11 +375,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resetGame();
     });
 
-    // ======== تم الحذف: معالج حدث زر النتائج ========
-    // backToHomeFromResults.addEventListener('click', (event) => {
-    //     event.preventDefault();
-    //     resetGame();
-    // });
+    backToHomeFromResults.addEventListener('click', (event) => {
+        event.preventDefault();
+        resetGame();
+    });
 
     // ======== جديد: معالجات أحداث أزرار التنقل ========
     prevQuestionBtn.addEventListener('click', (event) => {

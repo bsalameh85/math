@@ -56,10 +56,10 @@ body {
     display: none !important;
 }
 
-/* ======== جديد: تنسيق الشعار في وسط الشاشة ======== */
+/* ======== تم التعديل: تصغير الشعار في وسط الشاشة ======== */
 .logo-display {
-    width: 180px;
-    height: 180px;
+    width: 140px;
+    height: 140px;
     object-fit: contain;
     margin-bottom: 1rem;
     animation: float 3s ease-in-out infinite;
@@ -361,7 +361,7 @@ button:disabled {
     animation: pop-in 0.6s ease-out;
 }
 
-/* --- تصميم التذييل --- */
+/* --- تصميم التذييل (تم التعديل) --- */
 .main-footer {
     position: fixed;
     bottom: 0;
@@ -373,6 +373,8 @@ button:disabled {
     padding: 10px;
     font-size: 0.9rem;
     z-index: 1000;
+    /* تم إخفاؤه لأنه فارغ */
+    display: none; 
 }
 
 /* --- رسوم متحركة --- */
@@ -435,8 +437,9 @@ button:disabled {
     #action-buttons {
         flex-direction: column;
     }
+    /* ======== تم التعديل: تصغير الشعار في الشاشات الصغيرة ======== */
     .logo-display {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
     }
 }

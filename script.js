@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let currentQuestionIndex = 0;
     let questions = [];
-    let userAnswers = []; // لتتبع إجابات المستخدم
+    let userAnswers = [];
 
     // --- دوال المساعدة ---
     function showScreen(screen) {
@@ -86,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             learnBtn.disabled = !isFormValid;
         }
+
+        // --- إضافة تسجيل للمساعدة في التشخيص ---
+        console.log('Form Validated:', { isFormValid, name, table, count });
     }
 
     function displayTable(tableNumber) {
@@ -132,10 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ======== تم التعديل الكامل: دالة عرض السؤال ========
     function displayQuestion() {
         if (currentQuestionIndex < 0 || currentQuestionIndex >= questions.length) {
-            return; // لا تفعل شيئاً إذا كان الفهرس خارج النطاق
+            return;
         }
 
         const question = questions[currentQuestionIndex];
@@ -154,10 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
             answersContainer.appendChild(button);
         });
 
-        // ======== تحديث حالة أزرار التنقل ========
         updateNavButtons();
 
-        // ======== استعادة حالة الإجابة إذا كان المستخدم قد أجاب من قبل ========
         if (userAnswers[currentQuestionIndex]) {
             const previousAnswer = userAnswers[currentQuestionIndex];
             const allButtons = document.querySelectorAll('.answer-option');
@@ -174,9 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // ======== جديد: دالة لتحديث حالة أزرار التنقل ========
     function updateNavButtons() {
-        // تعطيل زر "السابق" في السؤال الأول
         if (currentQuestionIndex === 0) {
             prevQuestionBtn.disabled = true;
             prevQuestionBtn.classList.add('nav-btn-disabled');
@@ -185,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
             prevQuestionBtn.classList.remove('nav-btn-disabled');
         }
 
-        // تعطيل زر "التالي" في السؤال الأخير
         if (currentQuestionIndex === questions.length - 1) {
             nextQuestionBtn.disabled = true;
             nextQuestionBtn.classList.add('nav-btn-disabled');
@@ -195,9 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ======== تم التعديل: دالة معالجة النقر على الإجابة ========
     function handleAnswerClick(selectedAnswer, buttonElement) {
-        // إذا كان قد تم الإجابة على هذا السؤال من قبل، لا تفعل شيئاً
         if (userAnswers[currentQuestionIndex]) {
             return;
         }
@@ -205,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentQuestion = questions[currentQuestionIndex];
         const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
 
-        // حفظ إجابة المستخدم
         userAnswers[currentQuestionIndex] = { selected: selectedAnswer, isCorrect: isCorrect };
 
         if (isCorrect) {
@@ -214,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonElement.classList.add('correct');
         } else {
             buttonElement.classList.add('incorrect');
-            // إظهار الإجابة الصحيحة
             const allButtons = document.querySelectorAll('.answer-option');
             allButtons.forEach(btn => {
                 if (parseInt(btn.textContent) === currentQuestion.correctAnswer) {
@@ -223,26 +216,33 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // تعطيل جميع الأزرار
         const allButtons = document.querySelectorAll('.answer-option');
         allButtons.forEach(btn => {
             btn.classList.add('disabled');
             btn.style.pointerEvents = 'none';
         });
 
-        // ======== جديد: الانتقال التلقائي للسؤال التالي ========
         setTimeout(() => {
             goToNextQuestion();
-        }, 1500); // انتظر 1.5 ثانية للسماح برؤية رد الفعل
+        }, 1500);
     }
 
-    // ======== جديد: دالة الانتقال للسؤال التالي ========
+    function goToPreviousQuestion() {
+        if (currentQuestionIndex > 0) {
+            if (userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].isCorrect) {
+                score--;
+                scoreSpan.textContent = score;
+            }
+            currentQuestionIndex--;
+            displayQuestion();
+        }
+    }
+
     function goToNextQuestion() {
         if (currentQuestionIndex < questions.length - 1) {
             currentQuestionIndex++;
             displayQuestion();
         } else {
-            // إذا كان هذا هو آخر سؤال وتمت الإجابة عليه، اعرض النتائج
             if(userAnswers.every(answer => answer !== undefined)) {
                 showResults();
             }
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         childPictureUrl = '';
         tableDisplay.innerHTML = '';
         resultsPlayerPic.style.display = 'none';
-        userAnswers = []; // إعادة تعيين إجابات المستخدم
+        userAnswers = [];
         
         validateForm();
         
@@ -319,9 +319,16 @@ document.addEventListener('DOMContentLoaded', () => {
     tableSelect.addEventListener('change', validateForm);
     questionCountInput.addEventListener('input', validateForm);
 
+    // ======== إضافة تسجيل للمساعدة في التشخيص ========
     learnBtn.addEventListener('click', () => {
+        console.log('Learn button clicked!');
         childName = childNameInput.value.trim();
         selectedTable = tableSelect.value;
+
+        if (!childName || !selectedTable) {
+            alert('من فضلك أدخل اسمك واختر الجدول أولاً!');
+            return;
+        }
 
         setupPlayerInfo();
         tableNumberDisplay.textContent = selectedTable;
@@ -330,15 +337,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     testBtn.addEventListener('click', () => {
+        console.log('Test button clicked!');
         childName = childNameInput.value.trim();
         selectedTable = tableSelect.value;
         totalQuestions = parseInt(questionCountInput.value);
+
+        if (!childName || !selectedTable) {
+            alert('من فضلك أدخل اسمك واختر الجدول أولاً!');
+            return;
+        }
 
         setupPlayerInfo();
         generateQuestions(selectedTable, totalQuestions);
         score = 0;
         currentQuestionIndex = 0;
-        userAnswers = []; // إعادة تعيين الإجابات
+        userAnswers = [];
         scoreSpan.textContent = score;
         showScreen(gameScreen);
         displayQuestion();
@@ -349,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         generateQuestions(selectedTable, totalQuestions);
         score = 0;
         currentQuestionIndex = 0;
-        userAnswers = []; // إعادة تعيين الإجابات
+        userAnswers = [];
         scoreSpan.textContent = score;
         showScreen(gameScreen);
         displayQuestion();
@@ -372,7 +385,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resetGame();
     });
 
-    // ======== جديد: معالجات أحداث أزرار التنقل ========
     prevQuestionBtn.addEventListener('click', (event) => {
         event.preventDefault();
         goToPreviousQuestion();

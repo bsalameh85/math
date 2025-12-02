@@ -229,19 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('disabled');
             btn.style.pointerEvents = 'none';
         });
-    }
 
-    // ======== جديد: دالة الانتقال للسؤال السابق ========
-    function goToPreviousQuestion() {
-        if (currentQuestionIndex > 0) {
-            // إذا كانت الإجابة الحالية صحيحة، قلل النقاط
-            if (userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].isCorrect) {
-                score--;
-                scoreSpan.textContent = score;
-            }
-            currentQuestionIndex--;
-            displayQuestion();
-        }
+        // ======== جديد: الانتقال التلقائي للسؤال التالي ========
+        setTimeout(() => {
+            goToNextQuestion();
+        }, 1500); // انتظر 1.5 ثانية للسماح برؤية رد الفعل
     }
 
     // ======== جديد: دالة الانتقال للسؤال التالي ========
@@ -366,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     restartBtn.addEventListener('click', resetGame);
 
     backToHomeFromLearn.addEventListener('click', (event) => {
-        event.preventDefault(); // منع الرابط من التنقل
+        event.preventDefault();
         resetGame();
     });
 

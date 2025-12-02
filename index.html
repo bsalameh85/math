@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -86,11 +87,11 @@
         <!-- شاشة اللعبة والتدريب -->
         <section id="game-screen" class="screen hidden">
             <div class="card">
-                <!-- حاوية أزرار التنقل -->
+                <!-- ======== تم التعديل: استخدام <button> بدلاً من <a> ======== -->
                 <nav class="nav-links">
-                    <a href="#" id="back-to-home-from-game" class="nav-btn">الشاشة الرئيسية</a>
-                    <a href="#" id="prev-question-btn" class="nav-btn nav-btn-disabled" disabled>السابق</a>
-                    <a href="#" id="next-question-btn" class="nav-btn nav-btn-disabled" disabled>التالي</a>
+                    <button id="back-to-home-from-game" class="nav-btn">الشاشة الرئيسية</button>
+                    <button id="prev-question-btn" class="nav-btn nav-btn-disabled" disabled>السابق</button>
+                    <button id="next-question-btn" class="nav-btn nav-btn-disabled" disabled>التالي</button>
                 </nav>
 
                 <header class="player-info">
@@ -117,7 +118,8 @@
         <!-- شاشة النتائج -->
         <section id="results-screen" class="screen hidden">
             <div class="card">
-                <!-- ======== تم الحذف: زر العودة للرئيسية ======== -->
+                <a href="#" id="back-to-home-from-results" class="back-link">الشاشة الرئيسية</a>
+
                 <img id="results-player-pic" src="" alt="صورة اللاعب">
                 <img src="logo.png" alt="شعار المدرسة" class="logo-display">
                 <h2 id="result-title">انتهت المغامرة!</h2>
